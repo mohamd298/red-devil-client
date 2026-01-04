@@ -10,7 +10,7 @@
 <div class="box">
 <h2>اختر اسمك وصورة البروفايل</h2>
 <input id="name" placeholder="اسمك">
-<input type="file" id="avatar">
+<input type="file" id="avatar" accept="image/*">
 <button onclick="saveProfile()">حفظ</button>
 <div id="spinner-profile" class="spinner" style="display:none;"></div>
 <div id="error"></div>
@@ -37,7 +37,7 @@ async function saveProfile() {
       method:"POST",
       body: formData
     });
-    spinner.style.display = "none"; // اخفاء الدوران
+    spinner.style.display = "none";
     if(res.ok) window.location.href="chat.html";
   } catch(e){
     spinner.style.display = "none";
