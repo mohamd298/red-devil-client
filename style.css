@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: linear-gradient(135deg,#000,#400);
   height: 100vh;
   display: flex;
@@ -9,12 +9,12 @@ body {
 }
 
 #login, #profile {
-  background: rgba(0,0,0,.75);
+  background: rgba(0,0,0,.85);
   padding: 20px;
   border-radius: 14px;
   color: white;
   width: 90%;
-  max-width: 320px;
+  max-width: 350px;
   text-align: center;
 }
 
@@ -29,6 +29,7 @@ input, button {
 button {
   background: crimson;
   color: white;
+  cursor: pointer;
 }
 
 .hidden { display:none; }
@@ -37,6 +38,7 @@ img {
   width: 90px;
   height: 90px;
   border-radius: 50%;
+  margin-bottom: 10px;
 }
 
 .loader {
