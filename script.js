@@ -1,64 +1,102 @@
-let user = null;
+// 🔗 رابط السيرفر (مهم جدًا)
+const API = "https://red-devil-server.onrender.com";
 
-// مهم: استخدم نفس الدومين
-const API = "";
+let currentUser = null;
 
-function loader(id, show) {
-  document.getElementById(id).style.display = show ? "block" : "none";
+// ===== عناصر =====
+const loginBox = document.getElementById("login");
+const profileBox = document.getElementById("profile");
+const usernameInput = document.getElementById("username");
+const avatarImg = document.getElementById("avatar");
+const avatarInput = document.getElementById("avatarInput");
+const loginLoader = document.getElementById("loginLoader");
+const profileLoader = document.getElementById("profileLoader");
+
+// ===== أدوات =====
+function show(el) {
+  el.classList.remove("hidden");
+}
+function hide(el) {
+  el.classList.add("hidden");
+}
+function loading(el, state) {
+  el.style.display = state ? "block" : "none";
 }
 
+// ===== تسجيل الدخول =====
 async function login() {
-  const username = document.getElementById("username").value.trim();
-  if (!username) return alert("اكتب اسم");
+  const username = usernameInput.value.trim();
 
-  loader("loginLoader", true);
+  if (!username) {
+    alert("اكتب اسمك");
+    return;
+  }
+
+  loading(loginLoader, true);
 
   try {
     const res = await fetch(API + "/api/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ username })
     });
 
+    if (!res.ok) throw new Error("HTTP ERROR");
+
     const data = await res.json();
 
-    if (!data.success) throw 0;
+    if (!data.success) throw new Error("LOGIN FAILED");
 
-    user = data.user;
+    currentUser = data.user;
 
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("profile").classList.remove("hidden");
-    document.getElementById("avatar").src = user.avatar;
+    // عرض البروفايل
+    hide(loginBox);
+    show(profileBox);
 
-  } catch (e) {
+    avatarImg.src = currentUser.avatar;
+
+  } catch (err) {
+    console.error(err);
     alert("❌ خطأ في الاتصال بالسيرفر");
   }
 
-  loader("loginLoader", false);
+  loading(loginLoader, false);
 }
 
+// ===== حفظ الملف الشخصي =====
 async function saveProfile() {
-  loader("profileLoader", true);
+  if (!currentUser) return;
 
-  const avatar = document.getElementById("avatarInput").value.trim();
+  loading(profileLoader, true);
+
+  const avatar = avatarInput.value.trim();
 
   try {
-    await fetch(API + "/api/profile", {
+    const res = await fetch(API + "/api/profile", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        username: user.username,
+        username: currentUser.username,
         avatar
       })
     });
 
-    if (avatar) {
-      document.getElementById("avatar").src = avatar;
+    if (!res.ok) throw new Error("SAVE ERROR");
+
+    const data = await res.json();
+
+    if (data.success && avatar) {
+      avatarImg.src = avatar;
     }
 
-  } catch {
-    alert("فشل الحفظ");
+  } catch (err) {
+    console.error(err);
+    alert("❌ فشل حفظ الملف الشخصي");
   }
 
-  loader("profileLoader", false);
+  loading(profileLoader, false);
 }
