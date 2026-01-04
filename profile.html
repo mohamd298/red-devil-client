@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تحديد الملف الشخصي</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="box">
+<h2>اختر اسمك وصورة البروفايل</h2>
+<input id="name" placeholder="اسمك">
+<input type="file" id="avatar">
+<button onclick="saveProfile()">حفظ</button>
+<div id="error"></div>
+</div>
+
+<script>
+const API = "https://red-devil-server.onrender.com";
+const token = localStorage.getItem("token");
+
+async function saveProfile() {
+  const name = document.getElementById("name").value.trim();
+  const avatar = document.getElementById("avatar").files[0];
+  if(!name){document.getElementById("error").textContent="اكتب اسمك"; return;}
+  const formData = new FormData();
+  formData.append("token", token);
+  formData.append("name", name);
+  if(avatar) formData.append("avatar", avatar);
+
+  try{
+    const res = await fetch(`${API}/profile`, {
+      method:"POST",
+      body: formData
+    });
+    if(res.ok) window.location.href="chat.html";
+  } catch(e){
+    console.error(e);
+    document.getElementById("error").textContent="خطأ حفظ البيانات";
+  }
+}
+</script>
+</body>
+</html>
