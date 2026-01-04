@@ -27,14 +27,12 @@ async function login() {
 
   spinner.style.display = "block";
   try {
-    // تسجيل المستخدم إذا غير موجود
-    let res = await fetch(`${API}/register`, {
+    await fetch(`${API}/register`, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({user})
     });
-    // تسجيل الدخول للحصول على token
-    res = await fetch(`${API}/login`, {
+    const res = await fetch(`${API}/login`, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({user})
