@@ -2,13 +2,13 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>الشيطان الأحمر</title>
+  <title> Red Devil</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="login">
-  <h2>👹 Red Devil </h2>
+  <h2>👹  Red Devil </h2>
   <input id="username" placeholder="اكتب اسمك">
   <button onclick="login()">تسجيل دخول</button>
   <div class="loader" id="loginLoader"></div>
@@ -17,7 +17,8 @@
 <div id="profile" class="hidden">
   <h2>ملفك الشخصي</h2>
   <img id="avatar" src="">
-  <input id="avatarInput" placeholder="رابط صورة (اختياري)">
+  <input type="file" id="avatarInput">
+  <input type="text" id="avatarUrl" placeholder="أو ضع رابط صورة">
   <button onclick="saveProfile()">حفظ الملف الشخصي</button>
   <div class="loader" id="profileLoader"></div>
 </div>
