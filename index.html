@@ -4,14 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Красный дьявол</title>
-<link href="https://fonts.cdnfonts.com/css/din-next-arabic" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="box">
 <h2>Красный дьявол</h2>
-<input id="username" placeholder="اسم المستخدم">
-<input id="password" type="password" placeholder="كلمة السر">
+<input id="username" placeholder="اسمك">
 <button type="button" onclick="login()">تسجيل دخول</button>
 <div id="spinner-login" class="spinner" style="display:none;"></div>
 <div id="error"></div>
@@ -22,28 +20,34 @@ const API = "https://red-devil-server.onrender.com";
 
 async function login() {
   const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("error");
   const spinner = document.getElementById("spinner-login");
+  const errorBox = document.getElementById("error");
   errorBox.textContent = "";
-  if (!user || !pass) { errorBox.textContent="اكتب اليوزر وكلمة السر"; return; }
+  if(!user){errorBox.textContent="اكتب اسمك"; return;}
 
-  spinner.style.display = "block"; // اظهار الدوران
+  spinner.style.display = "block";
   try {
-    const res = await fetch(`${API}/login`, {
+    // تسجيل المستخدم إذا غير موجود
+    let res = await fetch(`${API}/register`, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({user, pass})
+      body: JSON.stringify({user})
+    });
+    // تسجيل الدخول للحصول على token
+    res = await fetch(`${API}/login`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({user})
     });
     spinner.style.display = "none";
-    if(!res.ok){errorBox.textContent="بيانات الدخول غير صحيحة"; return;}
+    if(!res.ok){errorBox.textContent="فشل تسجيل الدخول"; return;}
     const data = await res.json();
     localStorage.setItem("token", data.token);
     window.location.href="profile.html";
   } catch(e){
     spinner.style.display = "none";
     console.error(e);
-    errorBox.textContent="خطأ اتصال بالسيرفر";
+    errorBox.textContent="خطأ في الاتصال بالسيرفر";
   }
 }
 </script>
