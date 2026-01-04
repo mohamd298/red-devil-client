@@ -1,16 +1,20 @@
-let currentUser = null;
+let user = null;
 
-function showLoader(id, show) {
+// مهم: استخدم نفس الدومين
+const API = "";
+
+function loader(id, show) {
   document.getElementById(id).style.display = show ? "block" : "none";
 }
 
 async function login() {
-  const username = document.getElementById("username").value;
+  const username = document.getElementById("username").value.trim();
+  if (!username) return alert("اكتب اسم");
 
-  showLoader("loginLoader", true);
+  loader("loginLoader", true);
 
   try {
-    const res = await fetch("/login", {
+    const res = await fetch(API + "/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username })
@@ -18,40 +22,43 @@ async function login() {
 
     const data = await res.json();
 
-    if (!data.success) throw new Error();
+    if (!data.success) throw 0;
 
-    currentUser = data.user;
+    user = data.user;
 
-    document.getElementById("login-box").classList.add("hidden");
-    document.getElementById("profile-box").classList.remove("hidden");
-    document.getElementById("avatar").src = currentUser.avatar;
-  } catch {
-    alert("خطأ في الاتصال بالسيرفر");
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("profile").classList.remove("hidden");
+    document.getElementById("avatar").src = user.avatar;
+
+  } catch (e) {
+    alert("❌ خطأ في الاتصال بالسيرفر");
   }
 
-  showLoader("loginLoader", false);
+  loader("loginLoader", false);
 }
 
 async function saveProfile() {
-  const avatar = document.getElementById("avatarInput").value;
+  loader("profileLoader", true);
 
-  showLoader("profileLoader", true);
+  const avatar = document.getElementById("avatarInput").value.trim();
 
   try {
-    await fetch("/profile", {
+    await fetch(API + "/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: currentUser.username,
+        username: user.username,
         avatar
       })
     });
 
-    document.getElementById("avatar").src =
-      avatar || currentUser.avatar;
+    if (avatar) {
+      document.getElementById("avatar").src = avatar;
+    }
+
   } catch {
-    alert("فشل حفظ الملف");
+    alert("فشل الحفظ");
   }
 
-  showLoader("profileLoader", false);
+  loader("profileLoader", false);
 }
