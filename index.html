@@ -1,48 +1,26 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Красный дьявол</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Red Devil</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="box">
-  <h2>Красный дьявол</h2>
-  <input id="username" placeholder="اسمك">
+<div id="login-box">
+  <h1>👹 Red Devil</h1>
+  <input id="username" placeholder="اكتب اسمك" />
   <button onclick="login()">تسجيل دخول</button>
-  <div class="spinner" id="spin" style="display:none"></div>
-  <div id="err"></div>
+  <div class="loader" id="loginLoader"></div>
 </div>
 
-<script>
-const API = "https://red-devil-server.onrender.com";
+<div id="profile-box" class="hidden">
+  <img id="avatar" />
+  <input id="avatarInput" placeholder="رابط صورة (اختياري)" />
+  <button onclick="saveProfile()">حفظ الملف الشخصي</button>
+  <div class="loader" id="profileLoader"></div>
+</div>
 
-async function login() {
-  const u = username.value.trim();
-  if (!u) return err.textContent = "اكتب اسمك";
-
-  spin.style.display = "block";
-  err.textContent = "";
-
-  try {
-    const res = await fetch(API + "/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: u })
-    });
-
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-    location.href = "profile.html";
-
-  } catch (e) {
-    err.textContent = "❌ فشل الاتصال بالسيرفر";
-  }
-
-  spin.style.display = "none";
-}
-</script>
+<script src="script.js"></script>
 </body>
 </html>
