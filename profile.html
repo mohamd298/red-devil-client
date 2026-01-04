@@ -21,7 +21,12 @@ const API = "https://red-devil-server.onrender.com";
 const token = localStorage.getItem("token");
 const DEFAULT_AVATAR = "https://cdn.discordapp.com/attachments/1328252771417194538/1457442598137499700/a0d3f87fe0d99e1cf38e51b8a1e3a564.jpg";
 
-// تحميل بيانات الملف الشخصي
+if(!token){
+  alert("لم يتم تسجيل الدخول! الرجاء العودة لصفحة الدخول.");
+  window.location.href="index.html";
+}
+
+// تحميل بيانات الملف الشخصي الحالي
 async function loadProfile() {
   try {
     const res = await fetch(`${API}/users.json`);
@@ -30,26 +35,25 @@ async function loadProfile() {
     if(user){
       document.getElementById("name").value = user.name || "";
     }
-  } catch(e){
-    console.error(e);
-  }
+  } catch(e){console.error(e);}
 }
 loadProfile();
 
-// حفظ الملف الشخصي
 async function saveProfile() {
   const name = document.getElementById("name").value.trim();
   const avatar = document.getElementById("avatar").files[0];
   const spinner = document.getElementById("spinner-profile");
-  if(!name){document.getElementById("error").textContent="اكتب اسمك"; return;}
-  
+  const errorBox = document.getElementById("error");
+  errorBox.textContent = "";
+
+  if(!name){errorBox.textContent="اكتب اسمك"; return;}
+
   const formData = new FormData();
   formData.append("token", token);
   formData.append("name", name);
   if(avatar) formData.append("avatar", avatar);
 
   spinner.style.display = "block";
-
   try {
     const res = await fetch(`${API}/profile`, {
       method:"POST",
@@ -58,14 +62,14 @@ async function saveProfile() {
     spinner.style.display = "none";
     if(res.ok){
       alert("تم حفظ الملف الشخصي!");
-      window.location.reload();
+      window.location.href="chat.html";
     } else {
-      document.getElementById("error").textContent="فشل حفظ الملف الشخصي";
+      errorBox.textContent="فشل حفظ الملف الشخصي";
     }
   } catch(e){
     spinner.style.display = "none";
     console.error(e);
-    document.getElementById("error").textContent="خطأ في الاتصال بالسيرفر";
+    errorBox.textContent="خطأ في الاتصال بالسيرفر";
   }
 }
 </script>
