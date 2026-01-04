@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Красный дьявол</title>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<style>
+body {
+  margin:0;
+  background:#050505;
+  color:#ff1a1a;
+  font-family:Arial;
+}
+#chat {
+  height:80vh;
+  overflow-y:auto;
+  padding:10px;
+}
+.msg {
+  background:#220000;
+  margin:6px 0;
+  padding:6px;
+  border-radius:5px;
+}
+#bar {
+  display:flex;
+}
+input {
+  flex:1;
+  padding:10px;
+}
+button {
+  padding:10px;
+  background:red;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="chat"></div>
+
+<div id="bar">
+  <input id="text" placeholder="اكتب رسالة">
+  <button onclick="send()">إرسال</button>
+</div>
+
+<script>
+const socket = io("PUT_RENDER_URL_HERE");
+const name = localStorage.getItem("name");
+
+socket.on("msg", m => {
+  chat.innerHTML += `<div class="msg"><b>${m.name}</b>: ${m.text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+});
+
+function send() {
+  if (!text.value) return;
+  socket.emit("msg", {
+    name: name,
+    text: text.value,
+    time: Date.now()
+  });
+  text.value = "";
+}
+</script>
+
+</body>
+</html>
