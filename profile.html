@@ -2,6 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تحديد الملف الشخصي</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,6 +12,7 @@
 <input id="name" placeholder="اسمك">
 <input type="file" id="avatar">
 <button onclick="saveProfile()">حفظ</button>
+<div id="spinner-profile" class="spinner" style="display:none;"></div>
 <div id="error"></div>
 </div>
 
@@ -21,19 +23,24 @@ const token = localStorage.getItem("token");
 async function saveProfile() {
   const name = document.getElementById("name").value.trim();
   const avatar = document.getElementById("avatar").files[0];
+  const spinner = document.getElementById("spinner-profile");
   if(!name){document.getElementById("error").textContent="اكتب اسمك"; return;}
+  
   const formData = new FormData();
   formData.append("token", token);
   formData.append("name", name);
   if(avatar) formData.append("avatar", avatar);
 
-  try{
+  spinner.style.display = "block"; // اظهار الدوران
+  try {
     const res = await fetch(`${API}/profile`, {
       method:"POST",
       body: formData
     });
+    spinner.style.display = "none"; // اخفاء الدوران
     if(res.ok) window.location.href="chat.html";
   } catch(e){
+    spinner.style.display = "none";
     console.error(e);
     document.getElementById("error").textContent="خطأ حفظ البيانات";
   }
