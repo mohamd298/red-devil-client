@@ -1,9 +1,9 @@
-// 🔗 رابط السيرفر (مهم جدًا)
+// رابط السيرفر
 const API = "https://red-devil-server.onrender.com";
 
 let currentUser = null;
 
-// ===== عناصر =====
+// عناصر الصفحة
 const loginBox = document.getElementById("login");
 const profileBox = document.getElementById("profile");
 const usernameInput = document.getElementById("username");
@@ -12,46 +12,31 @@ const avatarInput = document.getElementById("avatarInput");
 const loginLoader = document.getElementById("loginLoader");
 const profileLoader = document.getElementById("profileLoader");
 
-// ===== أدوات =====
-function show(el) {
-  el.classList.remove("hidden");
-}
-function hide(el) {
-  el.classList.add("hidden");
-}
-function loading(el, state) {
-  el.style.display = state ? "block" : "none";
-}
+// أدوات مساعدة
+function show(el) { el.classList.remove("hidden"); }
+function hide(el) { el.classList.add("hidden"); }
+function loading(el, state) { el.style.display = state ? "block" : "none"; }
 
-// ===== تسجيل الدخول =====
+// تسجيل الدخول
 async function login() {
   const username = usernameInput.value.trim();
-
-  if (!username) {
-    alert("اكتب اسمك");
-    return;
-  }
+  if (!username) return alert("اكتب اسمك");
 
   loading(loginLoader, true);
 
   try {
     const res = await fetch(API + "/api/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username })
     });
 
-    if (!res.ok) throw new Error("HTTP ERROR");
-
     const data = await res.json();
 
-    if (!data.success) throw new Error("LOGIN FAILED");
+    if (!data.success) throw new Error("Login failed");
 
     currentUser = data.user;
 
-    // عرض البروفايل
     hide(loginBox);
     show(profileBox);
 
@@ -65,33 +50,22 @@ async function login() {
   loading(loginLoader, false);
 }
 
-// ===== حفظ الملف الشخصي =====
+// حفظ الملف الشخصي
 async function saveProfile() {
   if (!currentUser) return;
 
-  loading(profileLoader, true);
-
   const avatar = avatarInput.value.trim();
+  loading(profileLoader, true);
 
   try {
     const res = await fetch(API + "/api/profile", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: currentUser.username,
-        avatar
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: currentUser.username, avatar })
     });
 
-    if (!res.ok) throw new Error("SAVE ERROR");
-
     const data = await res.json();
-
-    if (data.success && avatar) {
-      avatarImg.src = avatar;
-    }
+    if (data.success && avatar) avatarImg.src = avatar;
 
   } catch (err) {
     console.error(err);
