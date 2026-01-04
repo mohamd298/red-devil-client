@@ -3,46 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Красный дьявол</title>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<title>Red Devil Chat</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-<div id="chat"></div>
-<div id="bar">
-<input id="text" placeholder="اكتب رسالة">
-<button onclick="send()">إرسال</button>
+<div class="chat-container">
+  <div id="messages"></div>
+  <input id="msg" placeholder="اكتب رسالة">
+  <button onclick="sendMsg()">إرسال</button>
 </div>
 
 <script>
-const API = "https://red-devil-server.onrender.com";
+const socket = io("PUT_RENDER_URL_HERE");
 const token = localStorage.getItem("token");
-let name = "";
-let avatar = "";
 
-async function loadProfile() {
-  const res = await fetch(`${API}/users.json`);
+async function getUser() {
+  const res = await fetch("https://red-devil-server.onrender.com/users.json");
   const users = await res.json();
-  const user = Object.values(users).find(u => u.token === token);
-  if(user){name=user.name; avatar=user.avatar;}
+  return Object.values(users).find(u => u.token === token);
 }
-loadProfile();
 
-const chat = document.getElementById("chat");
-const socket = io(API);
-
-socket.on("msg", m => {
-  chat.innerHTML += `<div class="msg"><img src="${m.avatar||''}" class="avatar"><b>${m.name}</b>: ${m.text}</div>`;
-  chat.scrollTop = chat.scrollHeight;
-});
-
-function send() {
-  const textInput = document.getElementById("text");
-  const text = textInput.value.trim();
+async function sendMsg() {
+  const input = document.getElementById("msg");
+  const text = input.value.trim();
   if(!text) return;
-  socket.emit("msg",{name, avatar, text, time:Date.now()});
-  textInput.value="";
+  const user = await getUser();
+  socket.emit("msg", { user: user.name, avatar: user.avatar, text });
+  input.value = "";
 }
+
+socket.on("msg", data => {
+  const messages = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = "msg";
+  div.innerHTML = `<img src="${data.avatar}" class="avatar"><b>${data.user}:</b> ${data.text}`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+});
 </script>
 </body>
 </html>
